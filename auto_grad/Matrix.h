@@ -3,26 +3,19 @@
 #include<random>
 #include<chrono>
 
-struct BaseSource{
+struct MatrixSrc{
 public:
     float* ptr;
     int* ref_cnt;
 public:
-    BaseSource(){
-        ptr = nullptr;
-        ref_cnt = nullptr;
-    }
-    BaseSource(int size){
-        ptr = new float[size];
-        ref_cnt = new int(1);
-    }
-    BaseSource(const BaseSource& other){
+    MatrixSrc():ptr(nullptr), ref_cnt(nullptr){};
+    MatrixSrc(int size):ptr(new float[size]), ref_cnt(new int(1)){};
+    MatrixSrc(const MatrixSrc& other){
         ptr = other.ptr;
         ref_cnt = other.ref_cnt;
-        if(other.ref_cnt != nullptr) 
-            ++(*other.ref_cnt);
+        if(other.ref_cnt != nullptr) ++(*other.ref_cnt);
     }
-    BaseSource operator=(const BaseSource& other){
+    MatrixSrc operator=(const MatrixSrc& other){
         if(&other == this) return *this;
         if(ptr != nullptr){
             if(--(*ref_cnt) == 0)
@@ -33,24 +26,23 @@ public:
         if(other.ref_cnt != nullptr) ++(*other.ref_cnt);
         return *this;
     }
-    ~BaseSource(){
+    ~MatrixSrc(){
         if(ptr == nullptr) return;
         if(--(*ref_cnt) != 0) return;
         delete ref_cnt, delete[] ptr;
-        ptr = nullptr;
-        ref_cnt = nullptr;
+        ref_cnt = nullptr, ptr = nullptr;
     }
 };
 
 struct Matrix{
 public:
-    BaseSource src;
+    MatrixSrc src;
     int capacity;
 public:
     Matrix():capacity(0){}
     Matrix(int capacity){
         this->capacity = capacity;
-        src = BaseSource(capacity);
+        src = MatrixSrc(capacity);
     }
     Matrix(const Matrix& other){
         capacity = other.capacity;

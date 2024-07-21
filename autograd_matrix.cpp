@@ -10,6 +10,7 @@ int main(){
     GradMatrix b1(1); b1.rand();
     GradMatrix a(1 * 784, false); a.rand();
     GradMatrix tgt(1, false); tgt.rand();
+    float lr = 0.0005;
 
     for(int i=0;i<10; ++i){
         GradMatrix t0(a, w0, MATMUL,1, 784, 100); // (1, 10)
@@ -18,7 +19,7 @@ int main(){
         GradMatrix d1(t1, b1, ADD);
         GradMatrix loss(d1, d1, MUL);
         loss.backward();
-        w0.step(0.005); b0.step(0.005); w1.step(0.005);b1.step();
+        w0.step(lr); b0.step(lr); w1.step(lr);b1.step(lr);
         printf("loss:\t%f\n", loss.node->value.src.ptr[0]);
     }
 }
